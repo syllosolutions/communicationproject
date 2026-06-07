@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Bargaining Model, Why Nations Choose War or Peace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0a1428;
+    --navy2:#0f1d3a;
+    --panel:#13244a;
+    --panel2:#1a2f5c;
+    --gold:#d4af37;
+    --gold-soft:#e8c969;
+    --ink:#eaf0ff;
+    --muted:#9fb0d4;
+    --green:#3fb96b;
+    --green-soft:#7ee0a0;
+    --red:#e0564f;
+    --red-soft:#ff8a82;
+    --blue:#5b8def;
+    --line:rgba(212,175,55,.25);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:500;
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #1a2f5c 0%, transparent 60%),
+      radial-gradient(900px 600px at 110% 110%, #102043 0%, transparent 55%),
+      var(--navy);
+    color:var(--ink);
+    min-height:100vh;
+    line-height:1.55;
+  }
+  /* faint world-map grid */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.06;
+    background-image:
+      linear-gradient(transparent 95%, var(--gold) 95%),
+      linear-gradient(90deg, transparent 95%, var(--gold) 95%);
+    background-size:48px 48px;
+  }
+  .wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:28px 22px 80px}
+  .screen{display:none;animation:fade .5s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  h1,h2,h3{font-family:"Georgia",serif;letter-spacing:.3px;margin:0 0 .4em}
+  .eyebrow{font-family:'Inter',sans-serif;font-size:12px;letter-spacing:3px;
+    text-transform:uppercase;color:var(--gold);font-weight:700}
+  .sans{font-family:'Inter',sans-serif}
+  .muted{color:var(--muted)}
+  .gold{color:var(--gold)}
+  .green{color:var(--green-soft)}
+  .red{color:var(--red-soft)}
+
+  /* ---- Title ---- */
+  .title-card{
+    text-align:center;padding:46px 26px 40px;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(180deg, rgba(26,47,92,.55), rgba(10,20,40,.4));
+    box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .crest{font-size:40px;margin-bottom:6px;filter:drop-shadow(0 4px 10px rgba(212,175,55,.3))}
+  .title-card h1{font-size:clamp(30px,6vw,52px);line-height:1.05;
+    background:linear-gradient(180deg,#fff,var(--gold-soft));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .subtitle{font-size:clamp(15px,2.4vw,19px);color:var(--muted);max-width:560px;margin:10px auto 0;font-style:italic;font-weight:600}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:26px auto;max-width:320px}
+  .credits{font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);letter-spacing:.5px}
+  .credits b{color:var(--ink)}
+
+  /* ---- Buttons ---- */
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:700;font-size:15px;letter-spacing:.4px;
+    cursor:pointer;border:none;border-radius:10px;padding:14px 26px;color:#10203f;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    box-shadow:0 8px 22px rgba(212,175,55,.28);transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(212,175,55,.4)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--gold);background:rgba(212,175,55,.08)}
+  .btn.small{padding:10px 18px;font-size:13px}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* ---- Panels / cards ---- */
+  .panel{background:linear-gradient(180deg,rgba(26,47,92,.5),rgba(15,29,58,.5));
+    border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin:18px 0;
+    box-shadow:0 16px 50px rgba(0,0,0,.35)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .mini{background:rgba(10,20,40,.5);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px}
+  .mini h3{font-size:16px;color:var(--gold-soft)}
+  .mini p{margin:.3em 0 0;font-size:14px;color:var(--muted)}
+
+  .step-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .badge{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;
+    text-transform:uppercase;padding:5px 11px;border-radius:99px;border:1px solid var(--gold);color:var(--gold)}
+  .progress{display:flex;gap:8px;margin:0 0 18px}
+  .dot{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.1)}
+  .dot.done{background:var(--green)}
+  .dot.cur{background:var(--gold)}
+
+  /* ---- Bargaining bar ---- */
+  .barwrap{position:relative;margin:22px 0 8px;user-select:none}
+  .bartrack{position:relative;height:54px;border-radius:10px;overflow:hidden;
+    background:#0c1830;border:1px solid rgba(255,255,255,.08)}
+  .seg{position:absolute;top:0;bottom:0}
+  .seg.aWin{left:0;background:linear-gradient(180deg,rgba(91,141,239,.55),rgba(91,141,239,.3))}
+  .seg.bWin{right:0;background:linear-gradient(180deg,rgba(224,86,79,.5),rgba(224,86,79,.28))}
+  .seg.range{background:linear-gradient(180deg,rgba(63,185,107,.65),rgba(63,185,107,.35));
+    box-shadow:inset 0 0 0 1px rgba(126,224,160,.6)}
+  .tick{position:absolute;top:-8px;bottom:-8px;width:2px;background:#fff;opacity:.85}
+  .tick.warline{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .tlabel{position:absolute;top:60px;transform:translateX(-50%);font-size:11px;
+    font-family:'Inter',sans-serif;color:var(--muted);white-space:nowrap;text-align:center}
+  .barlegend{display:flex;gap:18px;flex-wrap:wrap;font-family:'Inter',sans-serif;
+    font-size:12px;color:var(--muted);margin-top:46px}
+  .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+
+  /* slider */
+  .demand{margin:24px 0 8px}
+  .demand label{font-family:'Inter',sans-serif;font-size:13px;color:var(--muted)}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:99px;
+    background:linear-gradient(90deg,var(--blue),var(--gold),var(--red));outline:none;margin-top:12px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+    background:#fff;border:3px solid var(--gold);cursor:grab;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;
+    border:3px solid var(--gold);cursor:grab}
+  .readout{font-family:'Inter',sans-serif;font-size:34px;font-weight:800;color:var(--gold-soft);
+    text-align:center;margin:4px 0}
+  .readout small{font-size:14px;color:var(--muted);font-weight:400}
+
+  .result{border-radius:12px;padding:18px 20px;margin-top:18px;border:1px solid;animation:pop .4s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+  .result.win{background:rgba(63,185,107,.12);border-color:var(--green)}
+  .result.war{background:rgba(224,86,79,.12);border-color:var(--red)}
+  .result h3{margin-top:0}
+  .result .big{font-family:'Inter',sans-serif;font-weight:800;font-size:18px}
+
+  .opts{display:grid;gap:10px;margin-top:6px}
+  .opt{display:block;width:100%;text-align:left;cursor:pointer;border-radius:12px;padding:14px 16px;
+    background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.08);color:var(--ink);
+    font-family:inherit;font-size:15px;transition:.12s}
+  .opt:hover{border-color:var(--gold);background:rgba(212,175,55,.08);transform:translateX(3px)}
+  .opt b{color:var(--gold-soft)}
+  .opt .sub{display:block;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .opt:disabled{opacity:.45;cursor:default;transform:none}
+
+  .pill{display:inline-block;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--navy);background:var(--gold-soft);border-radius:99px;padding:3px 10px;font-weight:700}
+  .stat{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;
+    font-size:14px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
+  .stat b{color:var(--gold-soft)}
+  .keyterm{border-bottom:1px dotted var(--gold);cursor:help}
+  .note{font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);
+    background:rgba(91,141,239,.08);border-left:3px solid var(--blue);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+  .scoreboard{display:flex;gap:14px;justify-content:center;margin:8px 0 4px;flex-wrap:wrap}
+  .scorebox{background:rgba(10,20,40,.6);border:1px solid var(--line);border-radius:12px;padding:14px 20px;text-align:center;min-width:120px}
+  .scorebox .n{font-family:'Inter',sans-serif;font-size:30px;font-weight:800;color:var(--gold-soft)}
+  .scorebox .l{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif}
+  .case{display:grid;grid-template-columns:auto 1fr;gap:14px 16px;align-items:start;margin-top:6px}
+  .case .ic{font-size:24px}
+  .case h3{font-size:16px;color:var(--gold-soft);margin-bottom:2px}
+  .case p{margin:0;font-size:14px;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:12px;font-family:'Inter',sans-serif;margin-top:40px;opacity:.7}
+  .flag{font-size:15px}
+  a{color:var(--gold-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ TITLE ============ -->
+  <section id="s-title" class="screen active">
+    <div class="title-card">
+      <div class="crest">⚖️</div>
+      <div class="eyebrow">POLI_SCI 240 International Relations</div>
+      <h1>The Bargaining Model</h1>
+      <div class="subtitle">Why do rational nations choose war when peace would leave both better off? Step into the shoes of a head of state and find out.</div>
+      <div class="rule"></div>
+      <p class="muted sans" style="max-width:600px;margin:0 auto;font-size:14px">
+        War is costly. So for almost any dispute, there exists a deal both sides prefer to fighting.
+        That deal lies within the <span class="gold">bargaining range</span>. This game lets you find it, and discover the
+        three reasons bargaining breaks down and war happens anyway.
+      </p>
+      <div class="btn-row">
+        <button class="btn" onclick="go('learn')">Begin ▸</button>
+        <button class="btn ghost" onclick="go('case')">Jump to the real-world case</button>
+      </div>
+      <div class="rule"></div>
+      <div class="credits">Communication Project by <b>Myles Levine</b> &amp; <b>Cary Kraemer</b></div>
+    </div>
+    <footer>Best viewed full-screen. Hover the <span class="gold">dotted gold terms</span> for definitions.</footer>
+  </section>
+
+  <!-- ============ LEARN / CONCEPT ============ -->
+  <section id="s-learn" class="screen">
+    <div class="step-head"><span class="badge">The Idea</span></div>
+    <h2>War is a failed bargain</h2>
+    <p class="muted">Two states, <b style="color:var(--blue)">Azuria</b> and <b style="color:var(--red-soft)">Crovia</b>, both claim one strip of border territory worth <b class="gold">100 points</b>. They can fight over it, or split it. Here is the main idea Professor Bellezza built the whole war unit around:</p>
+
+    <div class="panel">
+      <p class="sans" style="font-size:15px;margin-top:0">If they go to <b class="red">war</b>, the likely outcome is a "probable new border", but <b>both sides also pay the costs of fighting</b>: blood, treasure, destruction. Subtract those costs and you get each side's <i>true</i> value of war.</p>
+      <div class="barwrap">
+        <div class="bartrack" id="learnBar">
+          <div class="seg aWin" style="width:55%"></div>
+          <div class="seg bWin" style="width:45%"></div>
+          <div class="seg range" style="left:40%;width:25%"></div>
+          <div class="tick warline" style="left:52.5%"></div>
+        </div>
+        <div class="tlabel" style="left:52.5%">⚔ Probable border<br>if they fight</div>
+        <div class="barlegend">
+          <span><span class="swatch" style="background:var(--blue)"></span>Azuria would win this much by force</span>
+          <span><span class="swatch" style="background:var(--red)"></span>Crovia would win this much by force</span>
+          <span><span class="swatch" style="background:var(--green)"></span>The <b class="green">bargaining range</b></span>
+        </div>
+      </div>
+      <div class="note" style="margin-top:34px">
+        <b>The formula:</b> &nbsp; Each side's expected outcome <b>−</b> its costs of war <b>=</b> what it will accept.
+        The gap that opens up between them is the <b class="green">bargaining range</b>. Every deal inside the green zone
+        leaves <i>both</i> sides better off than war. War is only "rational" if something stops them from reaching it.
+      </div>
+    </div>
+
+    <p class="muted">So why does war ever happen? Professor Bellezza names <b class="gold">three failures</b>. You'll face each one as a round in the negotiation ahead:</p>
+    <div class="grid2">
+      <div class="mini"><h3>1 · Incomplete Information</h3><p>You can't see how tough the other side really is, and they have every reason to bluff.</p></div>
+      <div class="mini"><h3>2 · Commitment Problems</h3><p>Even a good deal is worthless if you can't trust them to keep it tomorrow.</p></div>
+      <div class="mini"><h3>3 · Indivisible Goods</h3><p>Some prizes seem impossible to split, a holy city, a capital, making it all-or-nothing.</p></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghost small" onclick="go('title')">◂ Back</button>
+      <button class="btn" onclick="startGame()">Enter the negotiation ▸</button>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="s-game" class="screen">
+    <div class="progress">
+      <div class="dot" id="p0"></div><div class="dot" id="p1"></div>
+      <div class="dot" id="p2"></div><div class="dot" id="p3"></div>
+    </div>
+    <div class="step-head">
+      <span class="badge" id="roundBadge">Round 1</span>
+      <h2 id="roundTitle" style="margin:0">The Bargaining Model</h2>
+    </div>
+    <p class="muted" id="roundIntro"></p>
+
+    <div class="panel" id="gamePanel">
+      <!-- dynamic content injected here -->
+    </div>
+
+    <div class="btn-row" id="gameNav" style="display:none">
+      <button class="btn" id="nextBtn" onclick="nextRound()">Next round ▸</button>
+    </div>
+  </section>
+
+  <!-- ============ CASE: RUSSIA-UKRAINE ============ -->
+  <section id="s-case" class="screen">
+    <div class="step-head"><span class="badge">Why it matters now</span></div>
+    <h2>The model on the world stage: Russia–Ukraine</h2>
+    <p class="muted">Abstract sliders are one thing. Here is the same logic in the defining war of our time. Before February 2022, Russia and Ukraine had a bargaining range over NATO membership, Donbas autonomy, and language policy. A deal existed that both could have preferred to war. It failed, and all <b class="gold">three</b> mechanisms are why.</p>
+
+    <div class="panel">
+      <div class="case">
+        <div class="ic">🕵️</div>
+        <div>
+          <h3>Incomplete information</h3>
+          <p>Putin badly misjudged three things: Ukrainian <span class="keyterm" data-tip="The willingness to endure costs to get what you want.">resolve</span>, NATO's unity, and his own army's readiness. He expected Kyiv to fall in days. Had Russia known what was coming, the pre-war bargain would have looked very different, but each side had an <b>incentive to misrepresent</b>, so the truth only emerged on the battlefield.</p>
+        </div>
+        <div class="ic">🤝</div>
+        <div>
+          <h3>Commitment problems</h3>
+          <p>Russia violated the 1994 Budapest security assurances in 2014, so it can't credibly promise not to invade again after any ceasefire. That's exactly why Ukraine demands binding guarantees from a third-party "coalition of the willing", to <b>enforce</b> a deal neither side can credibly keep alone.</p>
+        </div>
+        <div class="ic">🏛️</div>
+        <div>
+          <h3>Indivisible goods</h3>
+          <p>Both sides have <i>constructed</i> Crimea and the annexed regions as legally indivisible, Russia by constitution, Ukraine by a clause barring ceding land without a referendum. Yet functional fixes (a frozen frontline, de-facto control without legal cession) remain conceivable. As Professor Bellezza stresses, "indivisibility" is often <b>strategic</b>, not real.</p>
+        </div>
+      </div>
+      <div class="note">As of May 2026 Russia controls roughly 20% of Ukrainian territory, casualties number in the hundreds of thousands, and competing ceasefires hint at a return to the bargaining table. The model doesn't predict whether peace holds, but it tells us <i>exactly</i> what to watch.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghost small" onclick="go('title')">◂ Home</button>
+      <button class="btn" onclick="go('end')">See the takeaways ▸</button>
+    </div>
+  </section>
+
+  <!-- ============ END ============ -->
+  <section id="s-end" class="screen">
+    <div class="title-card">
+      <div class="crest">🕊️</div>
+      <div class="eyebrow">Debrief</div>
+      <h2 style="font-size:30px">You've run the bargaining table</h2>
+      <div class="scoreboard">
+        <div class="scorebox"><div class="n" id="scDeals">0</div><div class="l">Deals struck</div></div>
+        <div class="scorebox"><div class="n" id="scWars">0</div><div class="l">Wars triggered</div></div>
+        <div class="scorebox"><div class="n" id="scPts">0</div><div class="l">Points secured</div></div>
+      </div>
+      <div class="rule"></div>
+      <p class="muted sans" style="max-width:620px;margin:0 auto;font-size:14.5px;text-align:left">
+        The one idea to walk away with: <b class="gold">war is a puzzle.</b> Because fighting is costly, a peaceful split
+        almost always exists that beats war for everyone. When war happens anyway, it's because of
+        <span class="green">incomplete information</span>, <span class="green">commitment problems</span>, or
+        <span class="green">indivisible goods</span>, and each has a fix: credible signals, third-party enforcement,
+        and creative division. That's not just theory. It's the checklist diplomats are using on Russia–Ukraine right now.
+      </p>
+      <div class="btn-row">
+        <button class="btn ghost" onclick="go('case')">◂ Revisit the case</button>
+        <button class="btn" onclick="restart()">Play again ↻</button>
+      </div>
+      <div class="rule"></div>
+      <div class="credits"><b>Myles Levine</b> &amp; <b>Cary Kraemer</b></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- floating tooltip -->
+<div id="tip" style="position:fixed;z-index:50;max-width:260px;background:#0a1428;border:1px solid var(--gold);
+  border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--ink);
+  display:none;box-shadow:0 10px 30px rgba(0,0,0,.5)"></div>
+
+<script>
+/* ---------------- screen routing ---------------- */
+const screens = ['title','learn','game','case','end'];
+function go(name){
+  screens.forEach(s=>document.getElementById('s-'+s).classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------------- tooltips ---------------- */
+const tip = document.getElementById('tip');
+document.addEventListener('mouseover',e=>{
+  const t = e.target.closest('.keyterm');
+  if(t){ tip.textContent = t.dataset.tip; tip.style.display='block'; positionTip(e); }
+});
+document.addEventListener('mousemove',e=>{ if(tip.style.display==='block') positionTip(e); });
+document.addEventListener('mouseout',e=>{ if(e.target.closest('.keyterm')) tip.style.display='none'; });
+function positionTip(e){
+  let x=e.clientX+14, y=e.clientY+16;
+  if(x+270>innerWidth) x=e.clientX-274;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+
+/* ---------------- game state ---------------- */
+const state = { round:0, deals:0, wars:0, points:0 };
+const GOOD = 100;
+
+function startGame(){
+  state.round=0; state.deals=0; state.wars=0; state.points=0;
+  go('game'); renderRound();
+}
+function restart(){ startGame(); }
+
+const rounds = [
+  { badge:'Round 1', title:'The Bargaining Range',
+    intro:'Full visibility. You lead Azuria. The map below shows what each side would win by force, minus the costs of war. The green zone is every deal both sides prefer to fighting. Demand as much as you can, but cross Crovia’s red line and you get war.',
+    render:renderR1 },
+  { badge:'Round 2', title:'Incomplete Information',
+    intro:'Now the fog of war. You can’t see how much Crovia values this fight, its resolve is hidden, and it has every reason to bluff. Choose how to play the uncertainty.',
+    render:renderR2 },
+  { badge:'Round 3', title:'The Commitment Problem',
+    intro:'A fair deal is right there on the table. But Crovia is a rising power, and it already broke its last promise. Even a deal inside the bargaining range is worthless if it won’t hold. What do you do?',
+    render:renderR3 },
+  { badge:'Round 4', title:'The Indivisible Good',
+    intro:'The disputed prize is now the ancient capital city of Solveig, holy to both nations, claimed by both as all-or-nothing. The slider is gone; this looks like a fight to the death. Unless…',
+    render:renderR4 },
+];
+
+function renderRound(){
+  const r = rounds[state.round];
+  document.getElementById('roundBadge').textContent = r.badge;
+  document.getElementById('roundTitle').textContent = r.title;
+  document.getElementById('roundIntro').textContent = r.intro;
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('p'+i);
+    d.className='dot'+(i<state.round?' done':i===state.round?' cur':'');
+  }
+  document.getElementById('gameNav').style.display='none';
+  document.getElementById('nextBtn').textContent = state.round<3 ? 'Next round ▸' : 'See the real-world case ▸';
+  r.render(document.getElementById('gamePanel'));
+}
+function nextRound(){
+  state.round++;
+  if(state.round>=rounds.length){ finish(); }
+  else renderRound();
+}
+function showNav(){ document.getElementById('gameNav').style.display='flex'; }
+
+/* ----- shared bargaining-bar builder -----
+   p = Azuria's win share (0-100), cA, cB = costs of war.
+   lower = p - cA  (Azuria's minimum)   upper = p + cB (Crovia's max it'll give Azuria) */
+function barHTML(p,cA,cB,opts={}){
+  const lower=Math.max(0,p-cA), upper=Math.min(100,p+cB);
+  const showRange = opts.showRange!==false;
+  const rangeSeg = showRange
+    ? `<div class="seg range" style="left:${lower}%;width:${upper-lower}%"></div>` : '';
+  const warTick = opts.showWar!==false
+    ? `<div class="tick warline" style="left:${p}%"></div>
+       <div class="tlabel" style="left:${p}%">⚔ war border</div>` : '';
+  const lowLab = showRange?`<div class="tlabel" style="left:${lower}%;color:var(--blue)">Azuria<br>won’t accept less</div>`:'';
+  const upLab  = showRange?`<div class="tlabel" style="left:${upper}%;color:var(--red-soft)">Crovia<br>won’t give more</div>`:'';
+  return `<div class="barwrap"><div class="bartrack">
+      <div class="seg aWin" style="width:${p}%"></div>
+      <div class="seg bWin" style="width:${100-p}%"></div>
+      ${rangeSeg}${warTick}
+    </div>${lowLab}${upLab}
+    <div class="barlegend" style="margin-top:64px">
+      <span><span class="swatch" style="background:var(--green)"></span>green = both prefer to war</span>
+      <span><span class="swatch" style="background:var(--gold)"></span>gold = the war outcome</span>
+    </div></div>`;
+}
+
+/* ================= ROUND 1 ================= */
+function renderR1(panel){
+  const p=52, cA=12, cB=13;            // range 40 .. 65
+  const lower=p-cA, upper=p+cB;
+  panel.innerHTML = `
+    <div class="grid2" style="margin-top:-2px">
+      <div class="mini"><h3>⚔ If you fight</h3><p>You'd likely push the border to <b class="gold">${p}</b>, then lose <b class="red">${cA}</b> to war costs. War nets Azuria just <b>${lower} points</b>.</p></div>
+      <div class="mini"><h3>🎯 Your goal</h3><p>Win <b>more than ${lower}</b> without firing a shot. But demand past <b class="red">${upper}</b> and Crovia fights.</p></div>
+    </div>
+    ${barHTML(p,cA,cB)}
+    <div class="demand">
+      <label>Your demand, Azuria's share of the territory</label>
+      <input type="range" id="r1" min="0" max="100" value="${p}" oninput="r1Move(${lower},${upper})">
+      <div class="readout"><span id="r1val">${p}</span> <small>/ 100 points</small></div>
+    </div>
+    <div id="r1result"></div>
+    <div class="opts" style="margin-top:14px"><button class="opt" id="r1go" onclick="r1Decide(${p},${cA},${lower},${upper})"><b>Table this demand ▸</b><span class="sub">Lock in your offer and see how Crovia responds</span></button></div>`;
+}
+function r1Move(lower,upper){
+  const v=+document.getElementById('r1').value;
+  document.getElementById('r1val').textContent=v;
+  const rd=document.getElementById('r1result');
+  if(v>upper) rd.innerHTML=`<div class="note" style="border-color:var(--red);background:rgba(224,86,79,.1)">⚠ ${v} is past Crovia's red line (${upper}). Crovia would rather fight than accept this.</div>`;
+  else if(v<lower) rd.innerHTML=`<div class="note">You're leaving points on the table, even war would get Azuria ${lower}.</div>`;
+  else rd.innerHTML=`<div class="note" style="border-color:var(--green);background:rgba(63,185,107,.1)">✓ ${v} sits inside the bargaining range. A deal here beats war for both sides.</div>`;
+}
+function r1Decide(p,cA,lower,upper){
+  const v=+document.getElementById('r1').value;
+  document.getElementById('r1go').disabled=true;
+  document.getElementById('r1').disabled=true;
+  const rd=document.getElementById('r1result');
+  if(v>upper){
+    state.wars++; state.points+=(p-cA);
+    rd.innerHTML=`<div class="result war"><h3>⚔ War breaks out</h3><p class="big">You demanded too much.</p>
+      <p class="muted sans">Crovia refused and fought. After a brutal war you took the territory to the war border but paid the price: <b class="red">Azuria nets only ${p-cA} points</b>, less than the peaceful deal you could have had. Both sides burned value that no one recovers.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Demanding too much is one of the two classic bargaining mistakes. The costs of war are pure waste, that waste <i>is</i> the bargaining range.</p></div>`;
+  } else if(v<lower){
+    state.deals++; state.points+=v;
+    rd.innerHTML=`<div class="result win"><h3>🤝 Deal signed, but you undersold</h3><p class="big">Peace at ${v} points.</p>
+      <p class="muted sans">Crovia happily accepted; you settled for less than even war would have won you (${lower}). <b>Yielding too little</b> is the other classic bargaining mistake.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> The smart play is to push right up to the other side's red line, capturing the whole bargaining range without war.</p></div>`;
+  } else {
+    state.deals++; state.points+=v;
+    const optimal = v>=upper-2;
+    rd.innerHTML=`<div class="result win"><h3>🤝 Deal signed</h3><p class="big">Peace at ${v} points.</p>
+      <p class="muted sans">${optimal?'Masterful, you squeezed nearly the entire bargaining range without war.':'A solid settlement inside the bargaining range. Both nations are better off than they’d be fighting.'}</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Because war is costly, a peaceful split always exists that beats it. You just found it.</p></div>`;
+  }
+  showNav();
+}
+
+/* ================= ROUND 2 ================= */
+function renderR2(panel){
+  panel.innerHTML = `
+    <div class="note">Crovia's true cost of war is hidden. It is one of two types:
+      <b class="green">Weak-resolve</b> (high war costs → wide range, will concede) or
+      <b class="red">High-resolve</b> (low war costs → narrow range, will fight). Crovia knows which it is. You don't.</div>
+    ${barHTML(50,14,14,{showRange:false})}
+    <p class="muted sans" style="font-size:13.5px;margin-top:54px">Intelligence is murky. Crovia is <i>publicly</i> talking tough, but talk is cheap. How do you handle the uncertainty?</p>
+    <div class="opts">
+      <button class="opt" onclick="r2Pick('aggressive')"><b>Make a hard, maximal demand</b><span class="sub">Big payoff if Crovia is bluffing and weak, but war if it's truly resolved.</span></button>
+      <button class="opt" onclick="r2Pick('cautious')"><b>Offer a safe, modest split</b><span class="sub">Avoids war for sure, but leaves value on the table if Crovia was actually weak.</span></button>
+      <button class="opt" onclick="r2Pick('signal')"><b>Invest in credible signals &amp; spying</b><span class="sub">Costs points now, satellite monitoring + a costly mobilization to read Crovia's true resolve before you commit.</span></button>
+    </div>
+    <div id="r2result"></div>`;
+}
+function r2Pick(choice){
+  // Crovia is genuinely high-resolve this round; it is NOT bluffing-weak.
+  const croviaWeak = false;
+  document.querySelectorAll('#s-game .opt').forEach(b=>b.disabled=true);
+  const rd=document.getElementById('r2result');
+  if(choice==='aggressive'){
+    state.wars++; state.points+=8;
+    rd.innerHTML=`<div class="result war"><h3>⚔ It wasn't a bluff</h3><p class="big">Crovia was high-resolve, and it fought.</p>
+      <p class="muted sans">You read the tough talk as a bluff. It wasn't. Because you couldn't see Crovia's real <span class="keyterm" data-tip="Willingness to endure costs to get what you want.">resolve</span>, you demanded too much against a state willing to bleed. War follows. Net: <b class="red">8 points</b> after costs.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Incomplete information + incentives to misrepresent is failure #1. The other side will <i>always</i> claim to be tough; that's why cheap talk can't be trusted.</p></div>`;
+  } else if(choice==='cautious'){
+    state.deals++; state.points+=42;
+    rd.innerHTML=`<div class="result win"><h3>🤝 Safe peace</h3><p class="big">You avoided war at 42 points.</p>
+      <p class="muted sans">Playing it safe under uncertainty guarantees peace, but you concede more than you might have needed to. Sometimes the price of not knowing is a smaller slice.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Uncertainty itself shrinks what you can safely claim. Better information is worth paying for.</p></div>`;
+  } else {
+    state.deals++; state.points+=53;
+    rd.innerHTML=`<div class="result win"><h3>🛰 Signals cut through the fog</h3><p class="big">Peace at 53 points (after signaling costs).</p>
+      <p class="muted sans">Satellite monitoring and a visible mobilization did two jobs: they revealed Crovia's true high resolve, and your <b>sunk costs</b> credibly showed your own. With the bluffing stripped away, you found a real deal, and avoided the war that aggression would have caused.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> The fixes for incomplete information are <b>consensual spying</b> and <b>credible signaling</b>, brinkmanship, tying hands, and sunk costs that talk can't fake.</p></div>`;
+  }
+  showNav();
+}
+
+/* ================= ROUND 3 ================= */
+function renderR3(panel){
+  panel.innerHTML = `
+    <div class="note">A settlement at <b class="green">60 points</b> sits squarely in the bargaining range, both sides prefer it to war <i>today</i>. But Crovia's economy and army are growing fast. Next year it will be stronger, and it already tore up its last treaty with you.</div>
+    <div class="grid2">
+      <div class="mini"><h3>📈 Power transition</h3><p>Crovia is rising. A deal Crovia accepts now, it may rip up the moment it's strong enough to demand more.</p></div>
+      <div class="mini"><h3>🧾 Track record</h3><p>Crovia broke a security guarantee just years ago. Its promises are not, on their own, credible.</p></div>
+    </div>
+    <p class="muted sans" style="font-size:13.5px">A deal exists. The problem isn't the price, it's whether the promise will <i>hold.</i></p>
+    <div class="opts">
+      <button class="opt" onclick="r3Pick('sign')"><b>Sign the 60-point deal and trust them</b><span class="sub">Take the good deal at face value and hope Crovia honors it.</span></button>
+      <button class="opt" onclick="r3Pick('prevent')"><b>Launch a preventive war now</b><span class="sub">Strike while you're still the stronger power, before the window closes.</span></button>
+      <button class="opt" onclick="r3Pick('enforce')"><b>Demand binding third-party enforcement</b><span class="sub">Bring in outside guarantors + monitoring so neither side <i>can</i> cheat later.</span></button>
+    </div>
+    <div id="r3result"></div>`;
+}
+function r3Pick(choice){
+  document.querySelectorAll('#s-game .opt').forEach(b=>b.disabled=true);
+  const rd=document.getElementById('r3result');
+  if(choice==='sign'){
+    state.wars++; state.points+=30;
+    rd.innerHTML=`<div class="result war"><h3>⚔ The deal collapses</h3><p class="big">Crovia reneged.</p>
+      <p class="muted sans">You took the deal on trust. A year later, stronger and unbound, Crovia demanded more, and fought when refused. The price was right; the <b>commitment</b> was the problem. Net after war: <b class="red">30 points</b>.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Failure #2: even a deal inside the range fails if a side can't credibly promise not to revise it later, especially under a power transition.</p></div>`;
+  } else if(choice==='prevent'){
+    state.wars++; state.points+=34;
+    rd.innerHTML=`<div class="result war"><h3>⚔ Preventive war</h3><p class="big">You fought to lock in your advantage.</p>
+      <p class="muted sans">Fearing tomorrow's weakness, you struck today. It "worked", but you chose a costly war over a peace that might have held with the right safeguards. This is the dark logic the commitment problem creates: war <i>now</i> to avoid disadvantage <i>later</i>. Net: <b class="red">34 points</b>.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Power transitions tempt dominant powers toward preventive war, the bargaining model's most dangerous failure.</p></div>`;
+  } else {
+    state.deals++; state.points+=58;
+    rd.innerHTML=`<div class="result win"><h3>🤝 A deal that holds</h3><p class="big">Peace at 58 points, enforced.</p>
+      <p class="muted sans">By bringing in outside guarantors and monitoring, you made cheating costly for <i>both</i> sides. The promise is now credible because it no longer depends on trust alone. The bargaining range becomes reachable again.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> The fix for commitment problems is <b>third-party enforcement</b>, exactly the binding security guarantees Ukraine seeks from a "coalition of the willing."</p></div>`;
+  }
+  showNav();
+}
+
+/* ================= ROUND 4 ================= */
+function renderR4(panel){
+  panel.innerHTML = `
+    <div class="note">The prize is the holy capital <b class="gold">Solveig</b>. Both nations call it sacred and indivisible, a good that loses its value if you split it. There seems to be no number between 0 and 100 that works. War looks certain.</div>
+    <div class="barwrap"><div class="bartrack" style="background:repeating-linear-gradient(45deg,#2a1530,#2a1530 12px,#321a38 12px,#321a38 24px)">
+      <div class="tick warline" style="left:50%"></div>
+    </div><div class="tlabel" style="left:50%;color:var(--red-soft)">no split looks possible</div></div>
+    <p class="muted sans" style="font-size:13.5px;margin-top:54px">When the good itself can't be divided, the bargaining range vanishes. But is Solveig <i>truly</i> indivisible, or is that a story both sides tell to avoid compromise?</p>
+    <div class="opts">
+      <button class="opt" onclick="r4Pick('all')"><b>Insist on all of Solveig</b><span class="sub">Treat it as non-negotiable. Accept that this means war.</span></button>
+      <button class="opt" onclick="r4Pick('concede')"><b>Concede the whole city</b><span class="sub">Surrender the prize entirely to keep the peace.</span></button>
+      <button class="opt" onclick="r4Pick('creative')"><b>Find a functional division</b><span class="sub">Shared sovereignty, rotating administration, an internationalized old city, make the "indivisible" divisible.</span></button>
+    </div>
+    <div id="r4result"></div>`;
+}
+function r4Pick(choice){
+  document.querySelectorAll('#s-game .opt').forEach(b=>b.disabled=true);
+  const rd=document.getElementById('r4result');
+  if(choice==='all'){
+    state.wars++; state.points+=20;
+    rd.innerHTML=`<div class="result war"><h3>⚔ Holy war</h3><p class="big">All-or-nothing became nothing-but-war.</p>
+      <p class="muted sans">By treating Solveig as a single indivisible prize, you left no settlement either side could accept. The city is half-ruined in the fighting. Net: <b class="red">20 points</b>, and a sacred place destroyed.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Failure #3: truly indivisible goods leave no bargaining range. But how often is a good <i>truly</i> indivisible?</p></div>`;
+  } else if(choice==='concede'){
+    state.deals++; state.points+=10;
+    rd.innerHTML=`<div class="result win"><h3>🏳 Peace by surrender</h3><p class="big">You kept the peace, at 10 points.</p>
+      <p class="muted sans">Giving up everything avoids war but accepts the indivisibility framing at face value, handing the entire prize away. Peace, but a poor one.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Accepting "it can't be split" as a given is exactly the trap strategic indivisibility sets.</p></div>`;
+  } else {
+    state.deals++; state.points+=64;
+    rd.innerHTML=`<div class="result win"><h3>🕊 The indivisible, divided</h3><p class="big">Creative peace at 64 points of shared value.</p>
+      <p class="muted sans">Shared sovereignty over the old city, rotating administration, guaranteed access for both faiths. Solveig was never <i>physically</i> indivisible, the claim was <b>strategic</b>, a way to tie hands and refuse compromise. Reframe the good, and the bargaining range reappears.</p>
+      <p class="sans" style="font-size:13px"><span class="pill">Lesson</span> Most "indivisible" goods turn out to be divisible after all, through autonomy, partition, or shared sovereignty. That's the model's hopeful note.</p></div>`;
+  }
+  showNav();
+}
+
+/* ================= FINISH ================= */
+function finish(){
+  document.getElementById('scDeals').textContent=state.deals;
+  document.getElementById('scWars').textContent=state.wars;
+  document.getElementById('scPts').textContent=state.points;
+  go('case');
+}
+</script>
+</body>
+</html>
